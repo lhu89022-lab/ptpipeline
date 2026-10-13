@@ -238,6 +238,7 @@ pentest-ops-kit/
 ├── README.md
 ├── PLAN.md                         # 实现方案：模块划分、数据结构、六周排期
 ├── DESIGN-NOTES.md                 # 设计取舍：为什么这么做、刻意不做什么
+├── LICENSE                         # MIT
 ├── scope/
 │   └── manifest.example.yaml       # 授权声明：唯一授权来源
 ├── src/ptpipeline/
@@ -311,4 +312,4 @@ PYTHONPATH=src python scripts/verify_pipeline.py
 
 ## 许可
 
-MIT
+[MIT](LICENSE) © 2026 Hu Zhanlin
