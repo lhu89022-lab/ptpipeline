@@ -1,0 +1,262 @@
+{
+  "target": "http://127.0.0.1:8080/",
+  "scope_decision": {
+    "mode": "probe",
+    "target": "http://127.0.0.1:8080/",
+    "action": "http_request",
+    "verdict": "allow",
+    "reason": "IP literal inside authorized range",
+    "matched_rule": "ip_ranges:127.0.0.0/8"
+  },
+  "responses": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/",
+      "status": 200,
+      "headers": {
+        "server": "DemoHTTP/1.4.2, DemoHTTP/1.4.2 (Ubuntu)",
+        "date": "Tue, 13 Oct 2026 12:42:40 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "248",
+        "x-powered-by": "PHP/7.4.3",
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS"
+      },
+      "body_excerpt": "<!DOCTYPE html>\n<html><head><title>Index of /</title></head>\n<body>\n<h1>Index of /</h1>\n<hr>\n<pre>\n<a href=\"../\">../</a>\n<a href=\"backup/\">backup/</a>\n<a href=\"config.old\">config.old</a>\n<a href=\"notes.txt\">notes.txt</a>\n</pre>\n<hr>\n</body></html>\n",
+      "tls": null,
+      "error": ""
+    },
+    {
+      "method": "OPTIONS",
+      "url": "http://127.0.0.1:8080/",
+      "status": 200,
+      "headers": {
+        "server": "DemoHTTP/1.4.2, DemoHTTP/1.4.2 (Ubuntu)",
+        "date": "Tue, 13 Oct 2026 12:42:40 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "0",
+        "x-powered-by": "PHP/7.4.3",
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS"
+      },
+      "body_excerpt": "",
+      "tls": null,
+      "error": ""
+    },
+    {
+      "method": "TRACE",
+      "url": "http://127.0.0.1:8080/",
+      "status": 200,
+      "headers": {
+        "server": "DemoHTTP/1.4.2, DemoHTTP/1.4.2 (Ubuntu)",
+        "date": "Tue, 13 Oct 2026 12:42:40 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "42",
+        "x-powered-by": "PHP/7.4.3",
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS"
+      },
+      "body_excerpt": "TRACE / HTTP/1.1\r\nHost: 127.0.0.1:8080\r\n\r\n",
+      "tls": null,
+      "error": ""
+    }
+  ],
+  "findings": [
+    {
+      "rule_id": "CORS-WILDCARD-CREDS",
+      "title": "CORS 通配来源且允许携带凭据",
+      "severity": "high",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-12",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "响应同时返回 Access-Control-Allow-Origin: * 与 Allow-Credentials: true, 浏览器虽会拒绝该组合, 但说明 CORS 逻辑存在缺陷, 常伴随来源反射",
+      "remediation": "改为显式白名单来源回显, 并对 Origin 做严格校验; 避免在携带凭据的接口上使用通配符",
+      "evidence": {
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true"
+      }
+    },
+    {
+      "rule_id": "DIR-LISTING",
+      "title": "目录启用了自动索引 (Directory Listing)",
+      "severity": "medium",
+      "confidence": "medium",
+      "wstg_id": "WSTG-CONF-04",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "响应体中出现 'Index of /' 标记, 目录内容可被直接枚举; 需人工确认是否含敏感文件",
+      "remediation": "关闭 Web 服务器与反向代理的目录索引 (如 nginx autoindex off / Apache Options -Indexes)",
+      "evidence": {
+        "body_excerpt": "<!DOCTYPE html>\n<html><head><title>Index of /</title></head>\n<body>\n<h1>Index of /</h1>\n<hr>\n<pre>\n<a href=\"../\">../</a>\n<a href=\"backup/\">backup/</a>\n<a href=\"config.old\">config.old</a>\n<a href=\"notes.txt\">notes.txt</a>\n</pre>\n<hr>\n</body></html>\n"
+      }
+    },
+    {
+      "rule_id": "HEADER-MISSING-CONTENT-SECURITY-POLICY",
+      "title": "缺少安全响应头 Content-Security-Policy",
+      "severity": "medium",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-07",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "缺少内容安全策略 (CSP), 对 XSS 的纵深防御缺失",
+      "remediation": "按最小可用原则下发 CSP, 先以 Content-Security-Policy-Report-Only 观察再转正式",
+      "evidence": {
+        "request": "GET http://127.0.0.1:8080/",
+        "observed_headers": [
+          "access-control-allow-credentials",
+          "access-control-allow-methods",
+          "access-control-allow-origin",
+          "content-length",
+          "content-type",
+          "date",
+          "server",
+          "x-powered-by"
+        ]
+      }
+    },
+    {
+      "rule_id": "HEADER-MISSING-X-CONTENT-TYPE-OPTIONS",
+      "title": "缺少安全响应头 X-Content-Type-Options",
+      "severity": "medium",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-07",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "缺少 X-Content-Type-Options: nosniff, 浏览器可能对响应做 MIME 嗅探",
+      "remediation": "在 Web 服务器或反向代理层统一追加 X-Content-Type-Options: nosniff",
+      "evidence": {
+        "request": "GET http://127.0.0.1:8080/",
+        "observed_headers": [
+          "access-control-allow-credentials",
+          "access-control-allow-methods",
+          "access-control-allow-origin",
+          "content-length",
+          "content-type",
+          "date",
+          "server",
+          "x-powered-by"
+        ]
+      }
+    },
+    {
+      "rule_id": "HTTP-TRACE-ENABLED",
+      "title": "服务器响应了 TRACE 方法",
+      "severity": "medium",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-06",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "TRACE 返回 200; 历史上与跨站追踪攻击 (XST) 相关, 现代浏览器已缓解但仍是攻击面",
+      "remediation": "在 Web 服务器配置中显式禁用 TRACE (Apache: TraceEnable off)",
+      "evidence": {
+        "status": 200,
+        "headers": {
+          "server": "DemoHTTP/1.4.2, DemoHTTP/1.4.2 (Ubuntu)",
+          "date": "Tue, 13 Oct 2026 12:42:40 GMT",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "42",
+          "x-powered-by": "PHP/7.4.3",
+          "access-control-allow-origin": "*",
+          "access-control-allow-credentials": "true",
+          "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS"
+        }
+      }
+    },
+    {
+      "rule_id": "BANNER-SERVER",
+      "title": "响应头泄露组件与版本信息 (server)",
+      "severity": "low",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-02",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "server: DemoHTTP/1.4.2, DemoHTTP/1.4.2 (Ubuntu) —— 版本号可被用于检索该版本的已知漏洞",
+      "remediation": "移除或泛化 server 头, 例如仅返回 'webserver' 而不带版本号",
+      "evidence": {
+        "header": "server",
+        "value": "DemoHTTP/1.4.2, DemoHTTP/1.4.2 (Ubuntu)"
+      }
+    },
+    {
+      "rule_id": "BANNER-X-POWERED-BY",
+      "title": "响应头泄露组件与版本信息 (x-powered-by)",
+      "severity": "low",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-02",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "x-powered-by: PHP/7.4.3 —— 版本号可被用于检索该版本的已知漏洞",
+      "remediation": "移除或泛化 x-powered-by 头, 例如仅返回 'webserver' 而不带版本号",
+      "evidence": {
+        "header": "x-powered-by",
+        "value": "PHP/7.4.3"
+      }
+    },
+    {
+      "rule_id": "HEADER-MISSING-REFERRER-POLICY",
+      "title": "缺少安全响应头 Referrer-Policy",
+      "severity": "low",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-07",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "缺少 Referrer-Policy, 跨站跳转可能泄露完整 URL 及其中参数",
+      "remediation": "下发 Referrer-Policy: strict-origin-when-cross-origin",
+      "evidence": {
+        "request": "GET http://127.0.0.1:8080/",
+        "observed_headers": [
+          "access-control-allow-credentials",
+          "access-control-allow-methods",
+          "access-control-allow-origin",
+          "content-length",
+          "content-type",
+          "date",
+          "server",
+          "x-powered-by"
+        ]
+      }
+    },
+    {
+      "rule_id": "HTTP-RISKY-METHODS",
+      "title": "OPTIONS 暴露了高风险方法: PUT, DELETE",
+      "severity": "low",
+      "confidence": "medium",
+      "wstg_id": "WSTG-CONF-06",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "Allow: GET, POST, PUT, DELETE, OPTIONS —— 需人工确认这些方法是否真的可用以及鉴权是否正确",
+      "remediation": "只保留业务必需的方法, 其余在网关层直接拒绝并返回 405",
+      "evidence": {
+        "allow": "GET, POST, PUT, DELETE, OPTIONS"
+      }
+    },
+    {
+      "rule_id": "HEADER-MISSING-PERMISSIONS-POLICY",
+      "title": "缺少安全响应头 Permissions-Policy",
+      "severity": "info",
+      "confidence": "high",
+      "wstg_id": "WSTG-CONF-07",
+      "target": "http://127.0.0.1:8080/",
+      "detail": "缺少 Permissions-Policy, 浏览器特性 (摄像头/定位等) 未做显式收敛",
+      "remediation": "下发 Permissions-Policy 显式关闭业务不需要的浏览器特性",
+      "evidence": {
+        "request": "GET http://127.0.0.1:8080/",
+        "observed_headers": [
+          "access-control-allow-credentials",
+          "access-control-allow-methods",
+          "access-control-allow-origin",
+          "content-length",
+          "content-type",
+          "date",
+          "server",
+          "x-powered-by"
+        ]
+      }
+    }
+  ],
+  "ledger": {
+    "path": "docs\\_capture\\demo-ledger.jsonl",
+    "ok": true,
+    "records": 3,
+    "broken_at": null,
+    "reason": "",
+    "head_hash": "0542c599accf96d5887c01ac13c7eae3e3228d62e92f885ec3d6e37eb3e38d71",
+    "first_ts": "2026-10-13T12:42:40Z",
+    "last_ts": "2026-10-13T12:42:40Z"
+  }
+}

@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ptpipeline"
+version = "0.1.0"
+description = "授权范围内的渗透测试流程与证据链平台 (scope-guarded pentest pipeline with a hash-chained evidence ledger)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Hu Zhanlin" }]
+keywords = ["security", "pentest", "scope-guard", "audit-trail", "evidence-chain", "owasp-wstg"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+
+# 刻意保持"零运行时依赖": 任何人在任何机器上 clone 后即可 `python -m ptpipeline doctor`。
+# 依赖越少, 这个项目越有可能被真的跑起来 —— 这也是可复现性的一部分。
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+ptpipeline = "ptpipeline.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/lhu89022-lab/ptpipeline"
+Source = "https://github.com/lhu89022-lab/ptpipeline"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

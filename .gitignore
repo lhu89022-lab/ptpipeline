@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# 自检临时产物
+.verify-tmp/
+
+# 展示资源构建时留下的运行日志（无脚本引用, 且含本机绝对路径）
+docs/_capture_run.log
+
+# 证据与账本: 真实项目的证据包可能含客户敏感信息, 绝不入库。
+# 仓库中只保留 evidence/.gitkeep 与脱敏后的演示样例。
+evidence/*
+!evidence/.gitkeep
+!evidence/sample-*
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,57 @@
+======================================================================
+ptpipeline 端到端自检
+======================================================================
+
+[1] 范围守卫: 授权外目标必须被拒绝 (不产生网络流量)
+  [PASS] https://www.baidu.com/ -> host outside all authorized domains
+  [PASS] http://10.0.0.1/ -> target matched exclusion '10.0.0.1'
+  [PASS] http://172.16.0.9/ -> IP outside all authorized ranges
+
+[2] 范围守卫: 本地靶场必须被放行
+  [PASS] http://127.0.0.1:8099/ -> ip_ranges:127.0.0.0/8
+
+[3] 启动靶场并执行完整探测
+[lab] 127.0.0.1 "GET / HTTP/1.1" 200 -
+[lab] 127.0.0.1 "OPTIONS / HTTP/1.1" 200 -
+[lab] 127.0.0.1 "TRACE / HTTP/1.1" 200 -
+  [PASS] GET 返回 200 (实际 200)
+  [PASS] OPTIONS 返回 200 (实际 200)
+  [PASS] TRACE 返回 200 (实际 200)
+
+[4] 检测规则应命中的缺陷
+  [PASS] 命中规则 HEADER-MISSING-CONTENT-SECURITY-POLICY
+  [PASS] 命中规则 HEADER-MISSING-X-CONTENT-TYPE-OPTIONS
+  [PASS] 命中规则 BANNER-SERVER
+  [PASS] 命中规则 BANNER-X-POWERED-BY
+  [PASS] 命中规则 DIR-LISTING
+  [PASS] 命中规则 CORS-WILDCARD-CREDS
+  [PASS] 命中规则 HTTP-TRACE-ENABLED
+  [PASS] 命中规则 HTTP-RISKY-METHODS
+  [PASS] finding 总数 >= 10 (实际 10)
+  [PASS] CORS-WILDCARD-CREDS 带修复建议与 WSTG 编号
+  [PASS] DIR-LISTING 带修复建议与 WSTG 编号
+  [PASS] HEADER-MISSING-CONTENT-SECURITY-POLICY 带修复建议与 WSTG 编号
+  [PASS] HEADER-MISSING-X-CONTENT-TYPE-OPTIONS 带修复建议与 WSTG 编号
+  [PASS] HTTP-TRACE-ENABLED 带修复建议与 WSTG 编号
+  [PASS] BANNER-SERVER 带修复建议与 WSTG 编号
+  [PASS] BANNER-X-POWERED-BY 带修复建议与 WSTG 编号
+  [PASS] HEADER-MISSING-REFERRER-POLICY 带修复建议与 WSTG 编号
+  [PASS] HTTP-RISKY-METHODS 带修复建议与 WSTG 编号
+  [PASS] HEADER-MISSING-PERMISSIONS-POLICY 带修复建议与 WSTG 编号
+
+[5] 审计账本完整性
+  [PASS] 哈希链完整 (3 条记录)
+  [PASS] 记录数 >= 3 (实际 3)
+  [PASS] 全部记录 verdict=allow (实际 {'total': 3, 'allow': 3, 'deny': 0, 'by_action': {'http_request': 3}})
+
+[6] 事后篡改必须被检出
+  [PASS] 篡改被检出 (broken_at=3)
+  [PASS] 断链位置精确定位在最后一行 (line 3)
+
+[7] CLI 冒烟: scope 干跑判定
+  [PASS] 公网目标 exit code = 1 (实际 1)
+  [PASS] 输出包含 DENY
+
+======================================================================
+结果: 33 项通过, 0 项失败
+======================================================================

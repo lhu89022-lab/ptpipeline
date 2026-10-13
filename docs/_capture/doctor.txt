@@ -1,0 +1,31 @@
+ptpipeline — 授权范围内的渗透测试流程与证据链平台
+────────────────────────────────────────────────────────────────────
+python : 3.12.14
+version: 0.1.0
+
+[1/4] 加载授权声明
+  [PASS] manifest 合法: scope\manifest.example.yaml
+       委托: 本地靶场自测 (Local Lab Self-Assessment) | 凭据: SELF-LAB-20260101
+       时间窗: 2026-01-01T00:00:00Z .. 2030-01-01T00:00:00Z (open=True)
+
+[2/4] 范围守卫: 越界目标必须被拒绝
+  [PASS] evil.example.com       已拒绝 -> host outside all authorized domains
+  [PASS] 8.8.8.8                已拒绝 -> IP outside all authorized ranges
+  [PASS] 172.16.5.5             已拒绝 -> IP outside all authorized ranges
+  [PASS] 10.0.0.1               已拒绝 -> target matched exclusion '10.0.0.1'
+  [PASS] 127.0.0.1              已拒绝 -> action 'exploit' is not in allow_actions
+
+[3/4] 范围守卫: 授权内目标必须被放行
+  [PASS] 127.0.0.1              已放行 -> ip_ranges:127.0.0.0/8
+  [PASS] localhost              已放行 -> domains:.localhost
+  [PASS] 10.20.30.40            已放行 -> ip_ranges:10.0.0.0/8
+  [PASS] http://127.0.0.1:8080/ 已放行 -> ip_ranges:127.0.0.0/8
+
+[4/4] 审计账本: 哈希链完整性 + 篡改检测
+  [PASS] 链完整, 2 条记录, head=4bf71401cd644c7d…
+  [PASS] 篡改被检出: broken_at=line 1 -> hash mismatch at seq=0: content was modified after write
+  [PASS] 写入保护生效: 拒绝向已损坏的账本追加新记录
+
+────────────────────────────────────────────────────────────────────
+自检全部通过。范围守卫与审计账本行为符合预期。
+合规提示: 本工具仅用于你本人拥有或已获书面授权的目标。

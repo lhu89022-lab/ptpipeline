@@ -1,0 +1,49 @@
+目标: http://127.0.0.1:8080/
+────────────────────────────────────────────────────────────────────
+  范围判定: ALLOW —— IP literal inside authorized range
+  探测计划: GET / / OPTIONS / / TRACE /
+  说明: 仅发送非侵入式请求, 不包含任何注入或爆破载荷。
+
+    GET       200 bytes=  248
+    OPTIONS   200 bytes=    0
+    TRACE     200 bytes=   42
+
+检测结论: 10 条 (可直接确认 8 / 需人工复核 2)
+────────────────────────────────────────────────────────────────────
+  [HIGH] CORS-WILDCARD-CREDS  (WSTG-CONF-12, 置信度=high)
+        CORS 通配来源且允许携带凭据
+        修复: 改为显式白名单来源回显, 并对 Origin 做严格校验; 避免在携带凭据的接口上使用通配符
+  [MED ] DIR-LISTING  (WSTG-CONF-04, 置信度=medium)
+        目录启用了自动索引 (Directory Listing)
+        修复: 关闭 Web 服务器与反向代理的目录索引 (如 nginx autoindex off / Apache Options -Indexes)
+  [MED ] HEADER-MISSING-CONTENT-SECURITY-POLICY  (WSTG-CONF-07, 置信度=high)
+        缺少安全响应头 Content-Security-Policy
+        修复: 按最小可用原则下发 CSP, 先以 Content-Security-Policy-Report-Only 观察再转正式
+  [MED ] HEADER-MISSING-X-CONTENT-TYPE-OPTIONS  (WSTG-CONF-07, 置信度=high)
+        缺少安全响应头 X-Content-Type-Options
+        修复: 在 Web 服务器或反向代理层统一追加 X-Content-Type-Options: nosniff
+  [MED ] HTTP-TRACE-ENABLED  (WSTG-CONF-06, 置信度=high)
+        服务器响应了 TRACE 方法
+        修复: 在 Web 服务器配置中显式禁用 TRACE (Apache: TraceEnable off)
+  [LOW ] BANNER-SERVER  (WSTG-CONF-02, 置信度=high)
+        响应头泄露组件与版本信息 (server)
+        修复: 移除或泛化 server 头, 例如仅返回 'webserver' 而不带版本号
+  [LOW ] BANNER-X-POWERED-BY  (WSTG-CONF-02, 置信度=high)
+        响应头泄露组件与版本信息 (x-powered-by)
+        修复: 移除或泛化 x-powered-by 头, 例如仅返回 'webserver' 而不带版本号
+  [LOW ] HEADER-MISSING-REFERRER-POLICY  (WSTG-CONF-07, 置信度=high)
+        缺少安全响应头 Referrer-Policy
+        修复: 下发 Referrer-Policy: strict-origin-when-cross-origin
+  [LOW ] HTTP-RISKY-METHODS  (WSTG-CONF-06, 置信度=medium)
+        OPTIONS 暴露了高风险方法: PUT, DELETE
+        修复: 只保留业务必需的方法, 其余在网关层直接拒绝并返回 405
+  [INFO] HEADER-MISSING-PERMISSIONS-POLICY  (WSTG-CONF-07, 置信度=high)
+        缺少安全响应头 Permissions-Policy
+        修复: 下发 Permissions-Policy 显式关闭业务不需要的浏览器特性
+
+证据与审计
+────────────────────────────────────────────────────────────────────
+  账本     : docs\_capture\demo-ledger.jsonl
+  记录条数 : 3 | 链完整性: OK
+  链头哈希 : 0542c599accf96d5887c01ac13c7eae3e3228d62e92f885ec3d6e37eb3e38d71
+  证据包   : docs\_capture\demo-findings.json

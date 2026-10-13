@@ -1,0 +1,6 @@
+# 仓库内一律 LF —— 这个项目要在 Windows / Linux / macOS 上给出同样的字节
+* text=auto eol=lf
+
+# 展示资产是二进制, 不做换行转换与文本差异
+*.png binary
+*.gif binary

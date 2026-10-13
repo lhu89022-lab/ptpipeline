@@ -1,0 +1,17 @@
+授权声明: scope\manifest.example.yaml
+────────────────────────────────────────────────────────────────────
+  委托主体      : 本地靶场自测 (Local Lab Self-Assessment) (self)
+  授权凭据编号  : SELF-LAB-20260101
+  测试时间窗     : 2026-01-01T00:00:00Z .. 2030-01-01T00:00:00Z
+  时间窗当前状态 : 开放
+  允许域名       : .localhost, .lab.internal
+  允许 IP 网段   : 127.0.0.0/8, 10.0.0.0/8, 192.168.0.0/16
+  允许 URL 前缀  : (未限制)
+  排除项         : 10.0.0.1, .prod.lab.internal
+  允许动作       : dns_resolve, http_request, tcp_connect, tls_handshake
+  未实现动作     : exploit, brute_force, packet_capture, denial_of_service
+  速率限制       : {'requests_per_second': 5, 'max_concurrency': 4}
+
+  判定: http://127.0.0.1:8080/ / http_request -> ALLOW
+        理由: IP literal inside authorized range
+        命中: ip_ranges:127.0.0.0/8

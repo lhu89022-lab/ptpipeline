@@ -1,0 +1,36 @@
+审计账本: evidence\audit-ledger.jsonl
+────────────────────────────────────────────────────────────────────
+  记录条数   : 12
+  允许 / 拒绝: 12 / 0
+  时间范围   : 2026-10-13T11:34:43Z .. 2026-10-13T11:40:38Z
+  链头哈希   : 5c17d22e4b26038fa794962b7c320648a65a0331f6ddf096f860d721138dd213
+  动作分布   : http_request=12
+
+  完整性: OK —— 全部记录的哈希链连续且未被修改。
+
+记录明细
+────────────────────────────────────────────────────────────────────
+  #  0 2026-10-13T11:34:43Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  1 2026-10-13T11:34:43Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  2 2026-10-13T11:34:43Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  3 2026-10-13T11:39:00Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  4 2026-10-13T11:39:00Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  5 2026-10-13T11:39:00Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  6 2026-10-13T11:39:22Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  7 2026-10-13T11:39:22Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  8 2026-10-13T11:39:22Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  9 2026-10-13T11:40:38Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  # 10 2026-10-13T11:40:38Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  # 11 2026-10-13T11:40:38Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range

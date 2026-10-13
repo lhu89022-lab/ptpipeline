@@ -1,0 +1,72 @@
+# =============================================================================
+# 授权范围声明 (Authorization Manifest)
+# -----------------------------------------------------------------------------
+# 本文件是 ptpipeline 的唯一授权来源。工具不会读取任何其他"范围"配置，
+# 所有出站动作在发起前必须通过本文件的校验，否则被拒绝并记入审计账本。
+#
+# ⚠️ 合规声明: 本文件只允许填写"你本人拥有或已获得书面授权"的目标。
+#    默认示例指向 RFC1918 私有地址与本机回环，请勿改为公网资产。
+# =============================================================================
+
+authorization:
+  # 项目/委托名称, 用于报告抬头
+  engagement: "本地靶场自测 (Local Lab Self-Assessment)"
+  # 授权主体 —— 真实项目中填写委托方全称, 自测则填写本人
+  client: "self"
+  # 书面授权凭据的引用编号 (合同号 / 邮件编号 / 内部审批单号)
+  # 自测场景填写 SELF-LAB-YYYYMMDD; 真实项目必须填写可追溯的凭据编号
+  contract_ref: "SELF-LAB-20260101"
+  # 受测系统负责人联系方式 (真实项目必填, 用于触发紧急停止流程)
+  emergency_contact: "self@localhost"
+  # 测试时间窗口 (UTC, ISO8601)。窗口外一律拒绝执行, 含"允许但不记录"的宽限
+  window_start: "2026-01-01T00:00:00Z"
+  window_end: "2030-01-01T00:00:00Z"
+
+scope:
+  # 允许的域名。以点开头表示"该域及其全部子域"; 精确域名只匹配自身
+  domains:
+    - ".localhost"
+    - ".lab.internal"
+
+  # 允许的 IP / CIDR 网段。仅限私有地址段与本机回环
+  ip_ranges:
+    - "127.0.0.0/8"
+    - "10.0.0.0/8"
+    - "192.168.0.0/16"
+
+  # 允许的完整 URL 前缀 (可选, 做了更细粒度的收敛)
+  # url_prefixes:
+  #   - "http://127.0.0.1:8080/"
+
+  # 排除项: 即使在上面范围内也禁止触碰的目标
+  # 优先级高于 domains / ip_ranges —— 用于排除生产库、域控、支付系统等
+  exclusions:
+    - "10.0.0.1"          # 例: 网关设备, 禁止探测
+    - ".prod.lab.internal" # 例: 生产子域, 只测预发
+
+  # 允许的动作白名单。未列出的动作类型一律拒绝
+  allow_actions:
+    - dns_resolve
+    - tcp_connect
+    - http_request
+    - tls_handshake
+    # 注意: 以下动作在本工具中 **不存在实现**, 仅作为概念边界说明
+    # - exploit        (漏洞利用)
+    # - brute_force    (暴力破解)
+    # - packet_capture (流量嗅探)
+
+  # 速率限制 —— 防止对有脆弱的系统造成事实上的拒绝服务
+  rate_limit:
+    requests_per_second: 5
+    max_concurrency: 4
+
+# 证据留存策略
+evidence:
+  # 是否对每个动作记录证据
+  enabled: true
+  # 审计账本路径 (相对项目根目录)
+  ledger_path: "evidence/audit-ledger.jsonl"
+  # 记录内容哈希的算法
+  hash_algorithm: "sha256"
+  # 是否在报告中脱敏 (凭据 / 内部 IP / 员工姓名)
+  redact_in_report: true

@@ -1,0 +1,11 @@
+审计账本: docs\_capture\demo-ledger.jsonl
+────────────────────────────────────────────────────────────────────
+  记录条数   : 3
+  可链式验证 : 2 条 —— 其后断链, 这几条不再可信
+  允许 / 拒绝: 3 / 0
+  时间范围   : 2026-10-13T12:42:40Z .. 2026-10-13T12:42:40Z
+  链头哈希   : e1d04a67b5a6f5d4d1e8750c877c273d557b16aecf740f090ac0aae59f55e853
+  动作分布   : http_request=3
+
+  完整性: BROKEN —— 第 3 行: hash mismatch at seq=2: content was modified after write
+  这意味着账本在该行之后被编辑过, 证据链已不可信。

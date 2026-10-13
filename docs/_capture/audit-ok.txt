@@ -1,0 +1,18 @@
+审计账本: docs\_capture\demo-ledger.jsonl
+────────────────────────────────────────────────────────────────────
+  记录条数   : 3
+  允许 / 拒绝: 3 / 0
+  时间范围   : 2026-10-13T12:42:40Z .. 2026-10-13T12:42:40Z
+  链头哈希   : 0542c599accf96d5887c01ac13c7eae3e3228d62e92f885ec3d6e37eb3e38d71
+  动作分布   : http_request=3
+
+  完整性: OK —— 全部记录的哈希链连续且未被修改。
+
+记录明细
+────────────────────────────────────────────────────────────────────
+  #  0 2026-10-13T12:42:40Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  1 2026-10-13T12:42:40Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
+  #  2 2026-10-13T12:42:40Z ALLOW http_request   http://127.0.0.1:8080/
+        └─ IP literal inside authorized range
